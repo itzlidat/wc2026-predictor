@@ -11,19 +11,11 @@ from xgboost import XGBClassifier
 
 sys.path.insert(0, str(Path(__file__).parent))
 from elo import DATA_DIR
+from features import FEATURE_COLS
 
 PREDICTIONS_DIR = Path(__file__).parent.parent / "predictions"
 MODEL_PATH = DATA_DIR / "model.json"
 
-FEATURE_COLS = [
-    "elo_diff",
-    "home_elo_rank",
-    "away_elo_rank",
-    "home_form",
-    "away_form",
-    "h2h_win_rate",
-    "is_neutral",
-]
 TARGET_COL = "target"
 LABEL_NAMES = {0: "away_win", 1: "draw", 2: "home_win"}
 
