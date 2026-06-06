@@ -1,0 +1,21 @@
+# Kaggle downloads — large and reproducible via kaggle CLI
+data/kaggle/
+
+# General large-file safety net
+*.sqlite
+*.db
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
