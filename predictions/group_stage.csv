@@ -1,0 +1,73 @@
+group,home_team,away_team,home_win_prob,draw_prob,away_win_prob,predicted_winner
+A,Mexico,South Africa,0.664,0.2372,0.0988,Mexico
+A,Mexico,South Korea,0.4157,0.3262,0.2581,Mexico
+A,Mexico,Czech Republic,0.4176,0.3432,0.2392,Mexico
+A,South Africa,South Korea,0.2791,0.2398,0.4811,South Korea
+A,South Africa,Czech Republic,0.2538,0.2752,0.471,Czech Republic
+A,South Korea,Czech Republic,0.4587,0.291,0.2503,South Korea
+B,Canada,Bosnia and Herzegovina,0.6558,0.2167,0.1275,Canada
+B,Canada,Qatar,0.6505,0.2786,0.0709,Canada
+B,Canada,Switzerland,0.267,0.3616,0.3714,Switzerland
+B,Bosnia and Herzegovina,Qatar,0.4899,0.2487,0.2614,Bosnia and Herzegovina
+B,Bosnia and Herzegovina,Switzerland,0.2195,0.3133,0.4673,Switzerland
+B,Qatar,Switzerland,0.2088,0.2821,0.5091,Switzerland
+C,Brazil,Morocco,0.485,0.2897,0.2252,Brazil
+C,Brazil,Haiti,0.9015,0.083,0.0156,Brazil
+C,Brazil,Scotland,0.615,0.2668,0.1182,Brazil
+C,Morocco,Haiti,0.8323,0.1132,0.0545,Morocco
+C,Morocco,Scotland,0.6691,0.2198,0.111,Morocco
+C,Haiti,Scotland,0.2644,0.2747,0.4608,Scotland
+D,United States,Paraguay,0.2984,0.2998,0.4019,Paraguay
+D,United States,Australia,0.3688,0.2826,0.3486,United States
+D,United States,Turkey,0.3095,0.3279,0.3626,Turkey
+D,Paraguay,Australia,0.4809,0.2753,0.2438,Paraguay
+D,Paraguay,Turkey,0.4294,0.2907,0.2799,Paraguay
+D,Australia,Turkey,0.291,0.3732,0.3358,Draw
+E,Germany,Curaçao,0.7908,0.1916,0.0176,Germany
+E,Germany,Ivory Coast,0.6024,0.2051,0.1925,Germany
+E,Germany,Ecuador,0.3145,0.3674,0.3181,Draw
+E,Curaçao,Ivory Coast,0.1812,0.2673,0.5515,Ivory Coast
+E,Curaçao,Ecuador,0.0814,0.1583,0.7602,Ecuador
+E,Ivory Coast,Ecuador,0.3065,0.1729,0.5207,Ecuador
+F,Netherlands,Japan,0.4003,0.3455,0.2542,Netherlands
+F,Netherlands,Sweden,0.558,0.3068,0.1352,Netherlands
+F,Netherlands,Tunisia,0.6131,0.2958,0.0912,Netherlands
+F,Japan,Sweden,0.6391,0.1871,0.1738,Japan
+F,Japan,Tunisia,0.6227,0.2584,0.119,Japan
+F,Sweden,Tunisia,0.4808,0.2687,0.2504,Sweden
+G,Belgium,Egypt,0.5252,0.2099,0.2649,Belgium
+G,Belgium,Iran,0.498,0.2903,0.2117,Belgium
+G,Belgium,New Zealand,0.7219,0.2109,0.0673,Belgium
+G,Egypt,Iran,0.3272,0.4109,0.2619,Draw
+G,Egypt,New Zealand,0.5932,0.2769,0.1299,Egypt
+G,Iran,New Zealand,0.5905,0.2774,0.1321,Iran
+H,Spain,Cape Verde,0.7074,0.2374,0.0552,Spain
+H,Spain,Saudi Arabia,0.6037,0.3718,0.0245,Spain
+H,Spain,Uruguay,0.5361,0.3588,0.1051,Spain
+H,Cape Verde,Saudi Arabia,0.4296,0.2832,0.2872,Cape Verde
+H,Cape Verde,Uruguay,0.26,0.2553,0.4847,Uruguay
+H,Saudi Arabia,Uruguay,0.2089,0.3525,0.4386,Uruguay
+I,France,Senegal,0.6402,0.2428,0.117,France
+I,France,Iraq,0.7849,0.1433,0.0718,France
+I,France,Norway,0.5201,0.3007,0.1792,France
+I,Senegal,Iraq,0.6777,0.2071,0.1152,Senegal
+I,Senegal,Norway,0.4698,0.2957,0.2345,Senegal
+I,Iraq,Norway,0.3078,0.2586,0.4335,Norway
+J,Argentina,Algeria,0.6787,0.173,0.1483,Argentina
+J,Argentina,Austria,0.5851,0.2723,0.1425,Argentina
+J,Argentina,Jordan,0.7954,0.1576,0.047,Argentina
+J,Algeria,Austria,0.3778,0.343,0.2791,Algeria
+J,Algeria,Jordan,0.5496,0.3175,0.1328,Algeria
+J,Austria,Jordan,0.6277,0.2255,0.1469,Austria
+K,Portugal,DR Congo,0.6256,0.2743,0.1001,Portugal
+K,Portugal,Uzbekistan,0.4896,0.3579,0.1525,Portugal
+K,Portugal,Colombia,0.2526,0.4603,0.2871,Draw
+K,DR Congo,Uzbekistan,0.3418,0.3047,0.3535,Uzbekistan
+K,DR Congo,Colombia,0.2989,0.2509,0.4502,Colombia
+K,Uzbekistan,Colombia,0.2395,0.2751,0.4854,Colombia
+L,England,Croatia,0.4715,0.2313,0.2972,England
+L,England,Ghana,0.8322,0.0983,0.0695,England
+L,England,Panama,0.6382,0.1796,0.1822,England
+L,Croatia,Ghana,0.8017,0.1446,0.0538,Croatia
+L,Croatia,Panama,0.5202,0.2637,0.2161,Croatia
+L,Ghana,Panama,0.2482,0.3264,0.4253,Panama
