@@ -153,6 +153,7 @@ def _accumulate_state(df: pd.DataFrame, fifa_lookup: dict) -> tuple:
             "away_goals_scored_avg":  round(away_goals_scored_avg, 4),
             "away_goals_conceded_avg":round(away_goals_conceded_avg, 4),
             "is_neutral":             1 if row.neutral == "TRUE" else 0,
+            "is_world_cup":           1 if row.tournament == "FIFA World Cup" else 0,
             "target":                 target,
         })
 

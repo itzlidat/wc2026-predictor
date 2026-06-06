@@ -21,19 +21,28 @@ LABEL_NAMES = {0: "away_win", 1: "draw", 2: "home_win"}
 
 
 DRAW_WEIGHT = 1.5  # draws oversampled relative to wins/losses
+WC_WEIGHT   = 2.0  # FIFA World Cup matches upweighted vs all other competitions
 
 
-def load_data() -> tuple[pd.DataFrame, pd.Series]:
+def load_data() -> tuple[pd.DataFrame, pd.Series, pd.Series]:
     df = pd.read_csv(DATA_DIR / "features.csv", parse_dates=["date"])
-    return df[FEATURE_COLS], df[TARGET_COL]
+    return df[FEATURE_COLS], df[TARGET_COL], df["is_world_cup"]
 
 
-def make_sample_weights(y: pd.Series) -> np.ndarray:
-    """Assign draw samples DRAW_WEIGHT, all other samples weight 1.0."""
-    return np.where(y == 1, DRAW_WEIGHT, 1.0)
+def make_sample_weights(y: pd.Series, is_wc: pd.Series) -> np.ndarray:
+    """
+    Combine draw and World Cup multipliers multiplicatively:
+      regular non-draw : 1.0
+      regular draw     : 1.5
+      WC non-draw      : 2.0
+      WC draw          : 3.0
+    """
+    draw_w = np.where(y == 1, DRAW_WEIGHT, 1.0)
+    wc_w   = np.where(is_wc == 1, WC_WEIGHT, 1.0)
+    return draw_w * wc_w
 
 
-def train(X: pd.DataFrame, y: pd.Series) -> XGBClassifier:
+def train(X: pd.DataFrame, y: pd.Series, is_wc: pd.Series) -> XGBClassifier:
     model = XGBClassifier(
         n_estimators=500,
         max_depth=5,
@@ -45,7 +54,7 @@ def train(X: pd.DataFrame, y: pd.Series) -> XGBClassifier:
         random_state=42,
         n_jobs=-1,
     )
-    model.fit(X, y, sample_weight=make_sample_weights(y))
+    model.fit(X, y, sample_weight=make_sample_weights(y, is_wc))
     return model
 
 
@@ -82,16 +91,17 @@ def evaluate(model: XGBClassifier, X_test: pd.DataFrame, y_test: pd.Series) -> N
 
 
 if __name__ == "__main__":
-    X, y = load_data()
+    X, y, is_wc = load_data()
 
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, stratify=y, random_state=42
+    X_train, X_test, y_train, y_test, wc_train, wc_test = train_test_split(
+        X, y, is_wc, test_size=0.2, stratify=y, random_state=42
     )
     print(f"Train: {len(X_train):,} rows  |  Test: {len(X_test):,} rows")
+    print(f"WC matches in train: {wc_train.sum():,}  |  test: {wc_test.sum():,}")
     print(f"Class distribution (train): {y_train.value_counts().sort_index().to_dict()}\n")
 
     print("Training XGBoost...")
-    model = train(X_train, y_train)
+    model = train(X_train, y_train, wc_train)
 
     print("\n--- Evaluation ---")
     evaluate(model, X_test, y_test)
