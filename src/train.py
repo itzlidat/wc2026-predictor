@@ -28,7 +28,7 @@ TARGET_COL = "target"
 LABEL_NAMES = {0: "away_win", 1: "draw", 2: "home_win"}
 
 
-DRAW_WEIGHT = 2.5  # draws oversampled relative to wins/losses
+DRAW_WEIGHT = 1.5  # draws oversampled relative to wins/losses
 
 
 def load_data() -> tuple[pd.DataFrame, pd.Series]:
