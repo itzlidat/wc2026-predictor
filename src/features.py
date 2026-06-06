@@ -4,11 +4,10 @@ from pathlib import Path
 from collections import defaultdict, deque
 
 sys.path.insert(0, str(Path(__file__).parent))
-from elo import compute_elo, DATA_DIR
+from elo import expected_score, DATA_DIR, K, START_ELO, HOME_ADVANTAGE
 
 
 def _win_rate(history: deque) -> float:
-    """Fraction of wins in history; 0.5 if no history (neutral prior)."""
     return sum(history) / len(history) if history else 0.5
 
 
@@ -16,52 +15,51 @@ def build_features() -> pd.DataFrame:
     df = pd.read_csv(DATA_DIR / "results.csv", parse_dates=["date"])
     df = df.sort_values("date").reset_index(drop=True)
 
-    # Reuse the chronological Elo engine for before-match ratings
-    match_elo, _ = compute_elo(df)
+    # Live Elo state — mirrors elo.py logic so we can derive rank at match time
+    ratings: dict[str, float] = {}
 
-    base = df[["date", "home_team", "away_team", "home_score", "away_score", "neutral"]].copy()
-    merged = base.merge(
-        match_elo[["date", "home_team", "away_team", "home_elo_before", "away_elo_before"]],
-        on=["date", "home_team", "away_team"],
-        how="left",
-    ).sort_values("date").reset_index(drop=True)
-
-    # team -> deque[int]  (1=won that match, 0=did not win)
     team_history: dict[str, deque] = defaultdict(lambda: deque(maxlen=10))
-    # frozenset({home, away}) -> deque of winning team name or None for draw
     h2h_history: dict[frozenset, deque] = defaultdict(lambda: deque(maxlen=10))
 
     records = []
-    for row in merged.itertuples(index=False):
+    for row in df.itertuples(index=False):
         home, away = row.home_team, row.away_team
         pair = frozenset([home, away])
+
+        home_elo = ratings.get(home, START_ELO)
+        away_elo = ratings.get(away, START_ELO)
+
+        # Rank = 1 + number of rated teams strictly above this team's Elo.
+        # Unrated teams default to START_ELO, so their rank reflects where
+        # 1500 sits among currently known ratings.
+        rated_elos = list(ratings.values())
+        home_elo_rank = 1 + sum(1 for e in rated_elos if e > home_elo)
+        away_elo_rank = 1 + sum(1 for e in rated_elos if e > away_elo)
 
         home_form = _win_rate(team_history[home])
         away_form = _win_rate(team_history[away])
 
         h2h = h2h_history[pair]
-        h2h_win_rate = (
-            sum(1 for w in h2h if w == home) / len(h2h) if h2h else 0.5
-        )
-
-        elo_diff = row.home_elo_before - row.away_elo_before
+        h2h_win_rate = sum(1 for w in h2h if w == home) / len(h2h) if h2h else 0.5
 
         if row.home_score > row.away_score:
-            target = 2
-            h2h_winner = home
+            target, h2h_winner = 2, home
+            actual_home = 1.0
         elif row.home_score < row.away_score:
-            target = 0
-            h2h_winner = away
+            target, h2h_winner = 0, away
+            actual_home = 0.0
         else:
-            target = 1
-            h2h_winner = None
+            target, h2h_winner = 1, None
+            actual_home = 0.5
 
         records.append(
             {
                 "date": row.date,
                 "home_team": home,
                 "away_team": away,
-                "elo_diff": round(elo_diff, 4),
+                "elo_diff": round(home_elo - away_elo, 4),
+                "home_elo_rank": home_elo_rank,
+                "away_elo_rank": away_elo_rank,
                 "home_form": round(home_form, 4),
                 "away_form": round(away_form, 4),
                 "h2h_win_rate": round(h2h_win_rate, 4),
@@ -70,14 +68,18 @@ def build_features() -> pd.DataFrame:
             }
         )
 
-        # Update rolling state AFTER recording (no data leakage)
+        # --- update state (after recording to prevent leakage) ---
+        home_adj = home_elo + (0 if row.neutral == "TRUE" else HOME_ADVANTAGE)
+        exp_home = expected_score(home_adj, away_elo)
+        ratings[home] = home_elo + K * (actual_home - exp_home)
+        ratings[away] = away_elo + K * ((1 - actual_home) - (1 - exp_home))
+
         team_history[home].append(1 if row.home_score > row.away_score else 0)
         team_history[away].append(1 if row.away_score > row.home_score else 0)
         h2h_history[pair].append(h2h_winner)
 
     features = pd.DataFrame(records)
-
-    # Filter to modern era; process full history above for accurate form/h2h
+    # Filter to modern era; full history above ensures accurate form/h2h/rank
     features = features[features["date"] >= "1990-01-01"].reset_index(drop=True)
     return features
 
@@ -87,6 +89,13 @@ if __name__ == "__main__":
     features.to_csv(DATA_DIR / "features.csv", index=False)
 
     print(f"Shape: {features.shape}")
-    print(f"\nTarget distribution:\n{features['target'].value_counts().sort_index().rename({0: 'away_win', 1: 'draw', 2: 'home_win'})}")
+    print(f"\nColumns: {list(features.columns)}")
+    print(f"\nTarget distribution:")
+    print(
+        features["target"]
+        .value_counts()
+        .sort_index()
+        .rename({0: "away_win", 1: "draw", 2: "home_win"})
+    )
     print(f"\nSample (5 rows):")
     print(features.sample(5, random_state=42).to_string(index=False))
