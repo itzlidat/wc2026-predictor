@@ -1,4 +1,5 @@
 import sys
+import numpy as np
 import pandas as pd
 import matplotlib
 matplotlib.use("Agg")
@@ -27,9 +28,17 @@ TARGET_COL = "target"
 LABEL_NAMES = {0: "away_win", 1: "draw", 2: "home_win"}
 
 
+DRAW_WEIGHT = 2.5  # draws oversampled relative to wins/losses
+
+
 def load_data() -> tuple[pd.DataFrame, pd.Series]:
     df = pd.read_csv(DATA_DIR / "features.csv", parse_dates=["date"])
     return df[FEATURE_COLS], df[TARGET_COL]
+
+
+def make_sample_weights(y: pd.Series) -> np.ndarray:
+    """Assign draw samples DRAW_WEIGHT, all other samples weight 1.0."""
+    return np.where(y == 1, DRAW_WEIGHT, 1.0)
 
 
 def train(X: pd.DataFrame, y: pd.Series) -> XGBClassifier:
@@ -44,7 +53,7 @@ def train(X: pd.DataFrame, y: pd.Series) -> XGBClassifier:
         random_state=42,
         n_jobs=-1,
     )
-    model.fit(X, y)
+    model.fit(X, y, sample_weight=make_sample_weights(y))
     return model
 
 
